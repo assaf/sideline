@@ -1,0 +1,22 @@
+{ "name": "sideline",
+  "description": "CoffeeScript shell for your server",
+  "author": [ "Assaf Arkin <assaf@labnotes.org> (labnotes.org)" ],
+  "version": "0.1.0",
+  "homepage": "http://github.com/assaf/sideline",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:assaf/sideline.git"
+  },
+  "bin": "./bin/sideline",
+  "main": "./lib/sideline.coffee",
+  "engines": {
+    "node": ">=0.4.0"
+  },
+  "dependencies": {
+    "coffee-script": "~1.1.1",
+    "eyes": "~0.1.6",
+    "js2coffee": "~0.1.1"
+  },
+  "devDependencies": {
+  }
+}

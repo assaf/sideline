@@ -1,0 +1,3 @@
+#!/usr/bin/env coffee
+Sideline = require(__dirname + "/../lib/sideline")
+Sideline.connect()
