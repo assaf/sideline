@@ -3,8 +3,8 @@ Server = require("./sideline/server").Server
 Eyes = require("eyes")
 
 
-# Default port is 8090.
-exports.PORT = 8090
+# Default port is 1973.
+exports.PORT = 1973
 # Default host is `localhost` so we only listen to local requests.
 exports.HOST = "localhost"
 
