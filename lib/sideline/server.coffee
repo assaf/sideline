@@ -1,6 +1,8 @@
 Net = require("net")
 CoffeeScript = require("coffee-script")
-JS2Coffee = require("../../node_modules/js2coffee/lib/js2coffee.coffee")
+# Ugly but necessary due to typo in js2coffee package.json
+require.paths.push __dirname + "/../../node_modules/js2coffee/lib"
+JS2Coffee = require("js2coffee")
 Script = require("vm").Script
 Sideline = require("../sideline")
 EventEmitter = require("events").EventEmitter
