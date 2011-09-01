@@ -5,13 +5,15 @@ functions, test code snippets.
 
 Connect Sideline over SSH to troubleshoot production instance.
 
-Run Sideline in standalone mode and use your model objects to mess with
-the database.
+Run Sideline in standalone mode and use model objects to mess with the
+database.
+
+Sideline talks CoffeeScript.
 
 
-## Connect to a Web Server
+## Add a shell to your Web server
 
-Have your Web server accept connections from Sideline clients, for example, for Express:
+With Express you could:
 
     Sideline = require("sideline")
 
@@ -28,7 +30,7 @@ Connect to the running server and do stuff:
     > server.settings.cache = false
     false
 
-Things you will always find in the context:
+Things you will always find in the global scope:
 
     console
     global
@@ -38,16 +40,17 @@ Things you will always find in the context:
     setInterval/clearInterval
     sideline
     require
+    _
 
-And of course `_` to hold the result of the last statement.
+The `_` property hold the result of the last statement.
 
-You can also add objects to the global context by calling
-`sideline.with(<object>)`.
+Use `sideline.with()` to add more properties to the global scope.
 
 
-## Scratch pad
+## Edit code snippets with the scratchpad
 
-Need to try things out that don't fit conveniently in one line?  Use the scratchpad:
+The `.edit` command opens a text editor, and runs the code when you’re
+done:
 
     $ sideline
     > .show
@@ -58,51 +61,48 @@ Need to try things out that don't fit conveniently in one line?  Use the scratch
     c = "foo:bar:baz"
     c.split().length
 
-The `.edit` command opens a text editor and runs the code when you close
-the editor.  The `.show` command shows you the contents of the
-scratchpad.
+Use `.show` to see the contents of the scratchpad.
 
-You can also use `.edit` and `.show` to edit actual functions:
+You can also use `.edit` and `.show` to edit functions:
 
     $ sideline
-    > f = -> "before"
-    [Function]
-    > .show f
-    f = ->
+    > .show foo.bar
+    foo.bar = ->
       "before"
-    > .edit f
-    > f()
+    > .edit foo.bar
+    > foo.bar()
     'after'
-    > .show f
-    f = ->
+    > .show foo.bar
+    foo.bar = ->
       "after"
 
-Sideline uses the editor specified in the `SIDELINE_EDITOR` or `EDITOR`
+Sideline uses the editor from the `SIDELINE_EDITOR` or `EDITOR`
 environment variable.
 
-If you like using Vim, you may want to set the environment variable to
-`vim --nofork -c "set syntax=coffee"`.
+For example, for Vim you would want to use: `vim --nofork -c "set
+syntax=coffee"`.
 
-Use the `.help` command to see a list of all available commands.
+See more commands by typing `.help`.
 
 
-## Run a standalone console
+## Add an application shell
 
-You can run Sideline as standaline console by having the server and
-client running in the same process.  For example:
+You can run Sideline as standalone shell by connecting to itself:
 
     #!/usr/bin/env coffee
     app = require("config/app")
     Sideline = require("sideline")
     Sideline.with(app: app).connect()
 
+Sideline defaults to port 1973, but when used in this way will upgrade
+to port 1974.
 
-## Using Sideline in production
 
-By default Sideline listens on port 8090 to localhost.  You can use SSH
-to tunnel into a server running with Sideline, e.g.:
+## Teleporting into production
 
-    $ ssh myapp.com -D 8090
+Use your SSH access to tunnel into production instance:
+
+    $ ssh -f -L 1973:localhost:1973 -N awesome.do.ma.in
     $ sideline
     >
 
