@@ -1,7 +1,7 @@
 { "name": "sideline",
   "description": "CoffeeScript shell for your server",
   "author": [ "Assaf Arkin <assaf@labnotes.org> (labnotes.org)" ],
-  "version": "1.0.2",
+  "version": "1.1.0",
   "homepage": "http://github.com/assaf/sideline",
   "repository": {
     "type": "git",
