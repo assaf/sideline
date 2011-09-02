@@ -4,6 +4,7 @@ Net = require("net")
 Eyes = require("eyes")
 EventEmitter = require("events").EventEmitter
 FS = require("fs")
+Path = require("path")
 spawn = require("child_process").spawn
 Sideline = require("../sideline")
 
@@ -24,12 +25,19 @@ class Client extends EventEmitter
       stdin.on "data", @repl.write.bind(@repl)
     else
       @repl = Readline.createInterface(stdin, stdout)
+    history_fn = Path.resolve(process.env.HOME, ".sideline_hist")
+    FS.readFile history_fn, "utf8", (err, history)=>
+      if history
+        @repl.history = history.split("\n")
     @repl.setPrompt "> "
     @repl.on "attemptClose", @repl.close.bind(@repl)
-    @repl.on "close", ->
-      process.stdout.write "\n"
-      stdin.destroy()
-      process.exit 0
+    @repl.on "close", =>
+      history = @repl.history.slice(0, 100)
+      history.shift() if /^\.exit/.test(history[0])
+      FS.writeFile history_fn, history.join("\n"), (err)->
+        process.stdout.write "\n"
+        stdin.destroy()
+        process.exit 0
 
     @repl.on "line", (line)=>
       [_, command, args] = line.match(/^(\.\w+)?\s*(.*)$/)

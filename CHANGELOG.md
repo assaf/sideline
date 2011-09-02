@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 1.1.0  2011-09-02
+
+Added persistent history, stored in `~/.sideline_hist`.
+
+
 ### Version 1.0.2  2011-09-01
 
 Switched default port to 1973. Just because.
