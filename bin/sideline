@@ -1,3 +1,6 @@
 #!/usr/bin/env coffee
 Sideline = require(__dirname + "/../lib/sideline")
-Sideline.connect()
+if process.ARGV[2] == "--self"
+  Sideline.server.connect()
+else
+  Sideline.connect()

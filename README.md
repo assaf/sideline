@@ -18,7 +18,7 @@ With Express you could:
     Sideline = require("sideline")
 
     server.configure "development", ->
-      Sideline.with(server: server).listen()
+      Sideline.using(server: server).listen()
 
 Connect to the running server and do stuff:
 
@@ -44,7 +44,7 @@ Things you will always find in the global scope:
 
 The `_` property hold the result of the last statement.
 
-Use `sideline.with()` to add more properties to the global scope.
+Use `sideline.using()` to add more properties to the global scope.
 
 
 ## Edit code snippets with the scratchpad
@@ -84,6 +84,11 @@ syntax=coffee"`.
 
 See more commands by typing `.help`.
 
+For example, try this:
+
+    $ sideline --self
+    > .expand require("./lib/sideline")
+
 
 ## Add an application shell
 
@@ -92,10 +97,17 @@ You can run Sideline as standalone shell by connecting to itself:
     #!/usr/bin/env coffee
     app = require("config/app")
     Sideline = require("sideline")
-    Sideline.with(app: app).connect()
+    Sideline.using(app: app).connect()
 
 Sideline defaults to port 1973, but when used in this way will upgrade
 to port 1974.
+
+Or use the `--self` command line option:
+
+    $ sideline --self
+    Sideline listening on port 1974
+    Sideline client connected from 127.0.0.1
+    >
 
 
 ## Teleporting into production

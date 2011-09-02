@@ -3,11 +3,69 @@ CoffeeScript = require("coffee-script")
 # Ugly but necessary due to typo in js2coffee package.json
 require.paths.push __dirname + "/../../node_modules/js2coffee/lib"
 JS2Coffee = require("js2coffee")
+Eyes = require("eyes")
 Script = require("vm").Script
 Sideline = require("../sideline")
 EventEmitter = require("events").EventEmitter
 exec = require("child_process").exec
 Client = require("./client").Client
+
+
+PADDING = "                                        " # 40
+ROOTS = [Object, String, Array, Function, Date, Number, Boolean]
+
+# Expanded information about an object.
+expand = (object)->
+  # Indent all lines by 2 spaces.
+  indent = (text)-> text.split("\n").map((line)-> "  #{line}").join("\n")
+  # Truncate text to length characters.
+  truncate = (text, length = 250)-> if text.length > length then text.slice(0, length - 4) + " ..." else text
+  # Show function definition: requires name, Function and optional
+  # prefix (for getter/setter).
+  func = (name, func, prefix)->
+    try
+      # Functions without a prototype are native, as is the Object
+      # constructor
+      body = if func.prototype && func.name != "Object"
+        truncate(JS2Coffee.build("#{name} = #{func.toString()}"))
+      else
+        "[NATIVE]"
+    catch ex
+      "#{ex}"
+    body = "#{prefix} #{body}" if prefix
+    lines = body.split("\n")
+    lines[0] = Eyes.stylize(lines[0], "yellow", all: null)
+    indent(lines.join("\n"))
+
+  items = []
+  # Enumerate all properties and expand information about each one:
+  #   name (writeable, configurable, enumerable)
+  #   getter function definition if exists
+  #   setter function definition if exists
+  #   function definition if a function
+  for name in Object.getOwnPropertyNames(object).sort()
+    padded = Eyes.stylize((name + PADDING).slice(0, PADDING.length), "blue", all: null)
+    desc = Object.getOwnPropertyDescriptor(object, name)
+    attrs = []
+    attrs.push "write" if desc.writable
+    attrs.push "enum" if desc.enumerable
+    attrs.push "config" if desc.configurable
+    joined = Eyes.stylize("(#{attrs.join(", ")})", "grey", all: null) if attrs.length > 0
+    items.push "#{padded} #{joined || ""}"
+    items.push func(name, desc.get, 1, "get") if desc.get
+    items.push func(name, desc.set, 1, "set") if desc.set
+    items.push func(name, desc.value, 1) if typeof desc.value == "function"
+  # Add from prototype, but skip Object, we've all seen that.
+  if parent = Object.getPrototypeOf(object)
+    for root in ROOTS
+      if object instanceof root || parent instanceof root
+        items.push indent(Eyes.stylize("- #{root.name}", "bold", all: null))
+        parent = null
+        break
+    if parent
+      items.push indent(Eyes.stylize("+ #{parent.constructor.name}", "bold", all: null))
+      items.push indent(expand(parent))
+  items.join("\n")
 
 
 # Sideline Server.
@@ -114,6 +172,18 @@ class Server extends EventEmitter
       catch err
         this.emit "error", client, err
 
+    # The 'EXPAND' event is the client asking us for expanded
+    # information about an object's properties.
+    this.on "EXPAND", (client, expr)=>
+      try
+        result = CoffeeScript.eval("(#{expr}\n)", sandbox: @context, filename: "sideline", modulename: "sideline")
+        if result == undefined || result == null
+          this.emit "error", client, new Error("'#{expr}' is not an object")
+        else
+          this.emit "render", client, expand(result)
+      catch err
+        this.emit "error", client, err
+
     # The `SHELL` event is the client asking us to execute a shell command.
     this.on "SHELL", (client, command)=>
       try
@@ -160,7 +230,7 @@ class Server extends EventEmitter
             this.emit command, client, args
           else break
     # Start listening on specified port/host.
-    server.listen @port, @host, (err)->
+    server.listen @port, @host, (err)=>
       callback err if callback
       if err
         console.error err.message
@@ -170,7 +240,7 @@ class Server extends EventEmitter
 
   # Adds key/value pairs from the Object to the Sideline context and
   # returns this.
-  with: (object)->
+  using: (object)->
     for key, value of object
       @context[key] = value
     return this

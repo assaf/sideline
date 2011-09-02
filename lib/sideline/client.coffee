@@ -125,6 +125,7 @@ class Client extends EventEmitter
   commands:
     show:   "Show function definition or scratch code"
     edit:   "Edit function definition or edit and execute scratch code"
+    expand: "List object properties and that of its prototypes"
     shell:  "Execute shell command"
     help:   "Show this help message"
     exit:   "Exit the console"
@@ -149,6 +150,10 @@ class Client extends EventEmitter
         else
           @scratch = code
           @send "EXEC #{code}"
+
+  # The .expand command.
+  expand: (expr)->
+    @send "EXPAND #{expr}"
 
   # The .shell command.
   shell: (command)->

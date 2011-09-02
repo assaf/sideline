@@ -56,14 +56,15 @@ exports.listen = (options, callback)->
 # returns the Sideline server.
 #
 # For example:
-#   sideline.with(app: app, db: db).listen()
+#   sideline.using(app: app, db: db).listen()
 #
 # Same as:
 #   sideline.context.db = db
 #   sideline.context.app = app
 #   sideline.listen()
-exports.with = (object)->
-  return exports.server.with(object)
+exports.using = (object)->
+  return exports.server.using(object)
+exports.with = exports.using # Deprecated
 
 # Sends arguments to all connected clients to display.
 #
