@@ -1,6 +1,6 @@
 # Changelog
 
-### Version 1.2.0  2011-09-02
+### Version 1.2.0  2011-09-06
 
 Added `.expand` command that lists all the properties of an object
 including the chain of prototype.
