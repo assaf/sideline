@@ -1,7 +1,5 @@
 Net = require("net")
 CoffeeScript = require("coffee-script")
-# Ugly but necessary due to typo in js2coffee package.json
-require.paths.push __dirname + "/../../node_modules/js2coffee/lib"
 JS2Coffee = require("js2coffee")
 Eyes = require("eyes")
 Script = require("vm").Script
