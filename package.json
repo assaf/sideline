@@ -9,10 +9,6 @@
   },
   "bin": "./bin/sideline",
   "main": "./lib/sideline.coffee",
-  "files": [
-    "CHANGELOG.md",
-    "README.md"
-  ],
   "engines": {
     "node": ">=0.4.0"
   },
