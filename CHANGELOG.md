@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 1.2.1  2014-04-18
+
+Fixed outdated code that breaks this module (Charlie Cheever)
+
+
 ### Version 1.2.0  2011-09-06
 
 Added `.expand` command that lists all the properties of an object
